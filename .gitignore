@@ -1,0 +1,5 @@
+# Dependency directories
+logs/*
+
+# dotenv environment variables file
+.env
