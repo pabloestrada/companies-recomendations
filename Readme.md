@@ -1,4 +1,3 @@
-
 # Python Data Applications - TP
 
 ## Instrucciones para iniciar el proyecto
