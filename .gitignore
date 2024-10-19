@@ -1,0 +1,7 @@
+# Dependency directories
+logs/
+node_modules/
+__pycache__/
+myenv/*
+# dotenv environment variables file
+.env
