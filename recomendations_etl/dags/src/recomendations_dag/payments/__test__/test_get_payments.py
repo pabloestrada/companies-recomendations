@@ -20,38 +20,15 @@ def test_get_payments_success_with_payment_date(mocker):
     mocker.patch("requests.get", return_value=mock_response)
 
     # Llamar a la función get_payments con payment_date
-    result = get_payments(payment_date="2024-10-15")
+    result = get_payments(updated_date_to_find="2024-10-15")
     
     # Verificar que el resultado sea el esperado
     assert result == mock_response.json.return_value
     
     # Verificar que requests.get fue llamado con la URL correcta
-    requests.get.assert_called_once_with("http://api:3000/payments", params={"payment_date": "2024-10-15", "limit": 1000, "offset": 0})
-
-def test_get_payments_success_with_date_range(mocker):
-    # Mockear la respuesta de requests.get
-    mock_response = mocker.Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = [{"data": "test data"}]
-    
-    # Mockear requests.get para que devuelva el mock_response
-    mocker.patch("requests.get", return_value=mock_response)
-
-    # Llamar a la función get_payments con start_payment_date y end_payment_date
-    result = get_payments(start_payment_date="2024-10-15", end_payment_date="2024-10-16")
-    
-    # Verificar que el resultado sea el esperado
-    assert result == mock_response.json.return_value
-    
-    # Verificar que requests.get fue llamado con la URL correcta y los parámetros
-    requests.get.assert_called_once_with("http://api:3000/payments", params={"start_payment_date": "2024-10-15", "end_payment_date": "2024-10-16", "limit": 1000, "offset": 0})
-    
-def test_get_payments_error_both_dates(mocker):
-    # Verificar que se lanza un ValueError si se proporcionan ambos tipos de fechas
-    with pytest.raises(ValueError, match="Solo se puede proporcionar payment_date o start_payment_date y end_payment_date, no ambos."):
-        get_payments(payment_date="2024-10-15", start_payment_date="2024-10-15")
+    requests.get.assert_called_once_with("http://api:3000/payments", params={"updated_at": "2024-10-15", "limit": 1000, "offset": 0})
 
 def test_get_payments_error_missing_dates(mocker):
     # Verificar que se lanza un ValueError si faltan ambos tipos de fechas
-    with pytest.raises(ValueError, match="Se debe proporcionar payment_date o ambos start_payment_date y end_payment_date."):
+    with pytest.raises(ValueError, match="Se debe proporcionar updated_date_to_find."):
         get_payments()
