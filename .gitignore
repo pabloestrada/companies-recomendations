@@ -1,12 +1,7 @@
 # Dependency directories
-<<<<<<< HEAD
 logs/
 node_modules/
 __pycache__/
-myenv/*
-=======
-logs/*
-
->>>>>>> 3f190e271a48c869ac1f30e5a2bfdadd8b3a0ea9
+venv/*
 # dotenv environment variables file
 .env

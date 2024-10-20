@@ -73,6 +73,7 @@ x-airflow-common:
     # If you want to use it, outcomment it and replace airflow.cfg with the name of your config file
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
     API_URL: http://api:3000
+    API_URL_TRAINING: http://training_api:5001/create_index
     REGION: us-east-1
     AWS_ENDPOINT_URL: http://localstack:4566
   volumes:
@@ -107,7 +108,13 @@ services:
     networks:
       - local
     depends_on:
-      - postgres   
+      - postgres  
+  training_api:  # Servicio para tu API
+    build: ../demo_resources/training_api  # Construye la imagen usando el Dockerfile en el directorio actual
+    ports:
+      - "5001:5001"
+    networks:
+      - local         
   postgres:
     image: postgres:13
     networks:
