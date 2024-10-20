@@ -1,11 +1,18 @@
 from psycopg2 import sql
 from .connect_db import connect_db
 
-def get_last_update():
+def get_last_update(service_name):
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM data_updates ORDER BY last_date_update DESC LIMIT 1;")
-    
+
+    # Modificar la consulta SQL para filtrar por service_name
+    cursor.execute("""
+        SELECT * FROM data_updates 
+        WHERE service_name = %s
+        ORDER BY last_date_update DESC 
+        LIMIT 1;
+    """, (service_name,))  # El valor de service_name se pasa de manera segura con una tupla
+
     # Usar la función para convertir el registro a un diccionario
     result = records_to_dicts(cursor)
 

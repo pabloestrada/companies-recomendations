@@ -8,3 +8,12 @@ CREATE TABLE payments (
     created_at TIMESTAMP NOT NULL,  -- Fecha y hora de creación del registro
     updated_at TIMESTAMP NOT NULL  -- Fecha y hora de la última actualización
 );
+
+CREATE TABLE companies (
+    id SERIAL PRIMARY KEY,                    -- Identificador único para cada compañía
+    company_code VARCHAR(50) NOT NULL,        -- Código de la compañía
+    company_name VARCHAR(255) NOT NULL,       -- Nombre de la compañía
+    category_id INTEGER,                      -- Identificador de la categoría
+    category_name VARCHAR(255),               -- Nombre de la categoría
+    is_top_biller BOOLEAN DEFAULT FALSE       -- Indica si es un "top biller"
+);

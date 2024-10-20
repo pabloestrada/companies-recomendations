@@ -33,7 +33,6 @@ def insert_payments(consolidated_df):
 
         # Si no existe el registro, es un nuevo registro y debemos insertarlo
         if existing_row is None:
-            print(f"Inserting new record for payment_id: {row.id}, company_code: {row.company_code}")
             data_to_insert.append((
                 row.id, row.payment_at, row.company_code, row.status, 
                 row.amount, row.external_client_id, row.created_at, 
@@ -98,3 +97,23 @@ def insert_payments(consolidated_df):
     conn.commit()
     cursor.close()
     conn.close()
+
+
+def get_payments_for_recomendations(payments_from):
+    conn = connect_db()  # Conectar a la base de datos
+    
+    # Query ajustada con filtro por fecha
+    query = """
+        SELECT t.payment_at, t.amount, t.external_client_id, c.company_id, c.category_id, c.is_top_biller
+        FROM payments_l0 t
+        JOIN companies_l0 c ON t.company_code = c.company_code
+        WHERE t.created_at > %s and t.payment_at is not null and t.is_current = true
+        ORDER BY t.payment_at DESC;
+    """
+    
+    # Usar pandas para ejecutar la query y devolver el resultado como DataFrame
+    df = pd.read_sql_query(query, conn, params=[payments_from])
+
+    conn.close()
+
+    return df

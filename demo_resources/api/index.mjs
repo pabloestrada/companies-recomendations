@@ -51,6 +51,32 @@ app.get("/payments", async (req, res) => {
   }
 });
 
+app.get("/companies", async (req, res) => {
+  try {
+    const { limit, offset } = req.query;
+    let query = db("companies").select("*");
+
+    // Aplicar limit y offset si están presentes
+    if (limit) {
+      query = query.limit(parseInt(limit));
+    }
+
+    if (offset) {
+      query = query.offset(parseInt(offset));
+    }
+
+    // Ordenar por id
+    query = query.orderBy("id");
+
+    // Ejecutar la consulta
+    const companies = await query;
+    res.json(companies);
+  } catch (error) {
+    console.log("error:", error);
+    res.status(500).json({ error: "Error fetching companies" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

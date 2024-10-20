@@ -51,9 +51,7 @@ def save_payments_to_db(bucket_name, files=[]):
         consolidated_df['start_date'] = pd.Timestamp.now()  # Fecha de inicio de validez del registro
         consolidated_df['end_date'] = None  # Fecha de fin de validez (None significa que es el registro actual)
         consolidated_df['is_current'] = True  # Todos los nuevos registros son actuales
-
-        print(f"consolidated_df:")
-        print(consolidated_df.head())  # Mostrar los primeros registros para ver si la consolidación funcionó
+        
         insert_payments(consolidated_df)
     else:
         print("No hay DataFrames consolidados para procesar.")

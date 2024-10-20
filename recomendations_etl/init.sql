@@ -54,3 +54,13 @@ CREATE TABLE payments_l0 (
     -- Clave compuesta
     CONSTRAINT payment_unique_key UNIQUE (payment_id, company_code, is_current)
 );
+
+CREATE TABLE companies_l0 (
+    id SERIAL PRIMARY KEY,                    -- Identificador único para cada compañía
+    company_id VARCHAR(50) NOT NULL,  -- Identificador de la empresa
+    company_code VARCHAR(50) NOT NULL,        -- Código de la compañía
+    company_name VARCHAR(255) NOT NULL,       -- Nombre de la compañía
+    category_id INTEGER,                      -- Identificador de la categoría
+    category_name VARCHAR(255),               -- Nombre de la categoría
+    is_top_biller BOOLEAN DEFAULT FALSE       -- Indica si es un "top biller"
+);
