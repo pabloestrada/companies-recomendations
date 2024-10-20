@@ -11,7 +11,7 @@ migrations:
 	cd ../demo_resources/api && npm run migrate:up && npm run seeds
 
 test:
-	pytest ./dags/src/
+	pytest ./recomendations_etl/dags/src/
 # Comando para detener los servicios
 down:
 	docker-compose down
