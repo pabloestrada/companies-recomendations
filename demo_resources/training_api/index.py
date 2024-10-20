@@ -115,14 +115,12 @@ def recomendar_empresas_para_cliente(client_id, num_recommendations=5, df_combin
     if df_combined is None or annoy_index is None:
         print("Datos no cargados correctamente.")
         return []
-
     # Obtener las empresas que ha pagado el cliente
     empresas_cliente = df_combined[df_combined['external_client_id'] == client_id]['company_id'].unique()
     
     if len(empresas_cliente) == 0:
         print(f"El cliente con ID {client_id} no ha realizado pagos.")
         return []
-
     # Obtener los embeddings de esas empresas desde el índice
     embeddings = []
     for company_id in empresas_cliente:
