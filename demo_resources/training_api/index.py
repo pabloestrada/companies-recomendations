@@ -75,7 +75,6 @@ def load_json_data_from_s3(bucket_name, object_key):
     
     # Cargar el contenido como JSON
     json_data = json.loads(file_content)
-    print(f"json_data: {json_data}")
 
     vector_dimension = json_data['vector_dimension']
     
@@ -116,17 +115,12 @@ def recomendar_empresas_para_cliente(client_id, num_recommendations=5, df_combin
     if df_combined is None or annoy_index is None:
         print("Datos no cargados correctamente.")
         return []
-    
     # Obtener las empresas que ha pagado el cliente
     empresas_cliente = df_combined[df_combined['external_client_id'] == client_id]['company_id'].unique()
     
     if len(empresas_cliente) == 0:
         print(f"El cliente con ID {client_id} no ha realizado pagos.")
         return []
-    
-    # Obtener las categorías de las empresas que el cliente ya ha pagado
-    categorias_cliente = df_combined[df_combined['company_id'].isin(empresas_cliente)]['category_id'].unique()
-    
     # Obtener los embeddings de esas empresas desde el índice
     embeddings = []
     for company_id in empresas_cliente:
@@ -139,39 +133,20 @@ def recomendar_empresas_para_cliente(client_id, num_recommendations=5, df_combin
     if len(embeddings) == 0:
         print(f"No se encontraron empresas en el índice para el cliente {client_id}.")
         return []
-    
+
     # Calcular el embedding promedio del cliente basado en las empresas que pagó
     embedding_cliente = np.mean(embeddings, axis=0)
-    
-    # Buscar las empresas más cercanas al embedding del cliente
-    recommended_companies = annoy_index.get_nns_by_vector(embedding_cliente, num_recommendations * 3)  # Buscar más para filtrar
-    
-    # Imprimir las primeras 10 empresas recomendadas
-    print("Primeras 10 empresas recomendadas:", recommended_companies[:10])
 
-    # Filtrar las recomendaciones para excluir empresas de las mismas categorías
-    empresas_recomendadas_filtradas = []
-    for company_id in recommended_companies:
-        # Verificar si existe la empresa antes de acceder a la categoría
-        empresa_data = df_combined[df_combined['company_id'] == company_id]
-        if not empresa_data.empty:
-            categoria_empresa = empresa_data['category_id'].values[0]
-            
-            # Solo añadir empresas si son de una categoría distinta a las que ya pagó el cliente
-            if categoria_empresa not in categorias_cliente:
-                empresas_recomendadas_filtradas.append(company_id)
-        
-        # Terminar cuando se alcanza el número de recomendaciones deseado
-        if len(empresas_recomendadas_filtradas) >= num_recommendations:
-            break
-    
+    # Buscar las empresas más cercanas al embedding del cliente
+    recommended_companies = annoy_index.get_nns_by_vector(embedding_cliente, num_recommendations)  # Ajustado para devolver solo las recomendadas
+
     # Convertir los IDs a enteros estándar de Python (int)
     empresas_cliente = [int(emp) for emp in empresas_cliente]
-    empresas_recomendadas_filtradas = [int(emp) for emp in empresas_recomendadas_filtradas]
-    
+    recommended_companies = [int(emp) for emp in recommended_companies]
+
     # Combinar las empresas que ya pagó el cliente con las nuevas recomendaciones
-    empresas_finales = empresas_cliente + empresas_recomendadas_filtradas
-    
+    empresas_finales = empresas_cliente + recommended_companies
+
     return empresas_finales
 
 # Función para buscar el company_name y company_code de las empresas recomendadas

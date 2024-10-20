@@ -74,6 +74,7 @@ x-airflow-common:
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
     API_URL: http://api:3000
     API_URL_TRAINING: http://training_api:5001/create_index
+    API_URL_TEST_TRAINING: http://training_api:5001/recommend_companies
     REGION: us-east-1
     AWS_ENDPOINT_URL: http://localstack:4566
   volumes:
