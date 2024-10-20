@@ -1,6 +1,7 @@
 # Python Data Applications - TP
 
 
+
 ## Requisitos Previos
 
 - Python 3.x instalado
