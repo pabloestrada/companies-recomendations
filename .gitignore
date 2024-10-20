@@ -5,3 +5,6 @@ __pycache__/
 venv/*
 # dotenv environment variables file
 .env
+
+companies_dataset.json
+payments_dataset.json

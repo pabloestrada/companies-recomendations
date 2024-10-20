@@ -17,7 +17,7 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-with DAG('companies', default_args=default_args, schedule_interval='@daily', catchup=False) as dag:
+with DAG('companies', default_args=default_args, schedule_interval='@weekly', catchup=False) as dag:
     
     # Paso 1: Llamar a save_companies_to_db
     save_companies_to_db_task = PythonOperator(
