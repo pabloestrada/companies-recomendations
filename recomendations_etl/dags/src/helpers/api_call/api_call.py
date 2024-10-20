@@ -30,3 +30,18 @@ def api_call_training(params):
     except requests.exceptions.RequestException as e:
         print(f"Error al consultar la API: {e}")
         raise  # Retornar None en caso de error
+    
+    
+def api_call_test_training(params):
+    url = os.getenv("API_URL_TEST_TRAINING")  # URL base
+
+    try:
+        # Realizar la solicitud POST con el cuerpo en formato JSON
+        response = requests.post(url, json=params)  # Usar json para parámetros en el cuerpo
+        response.raise_for_status()  # Lanza una excepción para códigos de estado HTTP 4xx/5xx
+
+        # Si la solicitud fue exitosa, devolver el JSON
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error al consultar la API: {e}")
+        raise  # Retornar None en caso de error    

@@ -99,20 +99,27 @@ def insert_payments(consolidated_df):
     conn.close()
 
 
-def get_payments_for_recomendations(payments_from):
+def get_payments_for_recomendations(payments_from, limit=None):
     conn = connect_db()  # Conectar a la base de datos
     
-    # Query ajustada con filtro por fecha
+    # Base de la query
     query = """
         SELECT t.payment_at, t.amount, t.external_client_id, c.company_id, c.category_id, c.is_top_biller
         FROM payments_l0 t
         JOIN companies_l0 c ON t.company_code = c.company_code
         WHERE t.created_at > %s and t.payment_at is not null and t.is_current = true
-        ORDER BY t.payment_at DESC;
+        ORDER BY t.payment_at DESC
     """
     
-    # Usar pandas para ejecutar la query y devolver el resultado como DataFrame
-    df = pd.read_sql_query(query, conn, params=[payments_from])
+    # Agregar el límite si se proporciona
+    if limit:
+        query += " LIMIT %s"
+        params = [payments_from, limit]
+    else:
+        params = [payments_from]
+
+    # Ejecutar la consulta usando pandas
+    df = pd.read_sql_query(query, conn, params=params)
 
     conn.close()
 

@@ -13,6 +13,7 @@ from src.recomendations_dag.payments.update_last_payments_update import update_l
 from src.recomendations_dag.payments.save_payments_to_db import save_payments_to_db
 from src.recomendations_dag.payments.verify_companies_exist import verify_companies_exist
 from src.recomendations_dag.payments.create_payments_index import create_payments_index
+from src.recomendations_dag.payments.validate_payments_index import validate_payments_index
 
 default_args = {
     'owner': 'airflow',
@@ -21,6 +22,7 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
     'payments_from': datetime.now() - timedelta(days=30),  # Calcula la fecha de hace 30 días
     'bucket_name': 'payments',
+    'payment_index_location': 'index/payment_index.json'
 }
 
 
@@ -81,8 +83,20 @@ with DAG('recomendations', default_args=default_args, schedule_interval='@daily'
         python_callable=create_payments_index,
         op_kwargs={
             'payments_from': default_args['payments_from'],
-            'bucket_name': default_args['bucket_name']
+            'bucket_name': default_args['bucket_name'],
+            'payment_index_location': default_args['payment_index_location']
+        }
+    )
+    
+    validate_payments_index_task = PythonOperator(
+        task_id='validate_payments_index_task',
+        python_callable=validate_payments_index,
+        op_kwargs={
+            'payments_from': default_args['payments_from'],
+            'bucket_name': default_args['bucket_name'],
+            'index_file_key': '{{ task_instance.xcom_pull(task_ids="create_payments_index_task")["index_file"] }}',
+            'json_file_key': default_args['payment_index_location']
         }
     )
 
-verify_bucket_task >> verify_companies_exist_task >> get_last_payments_update_task >> save_payments_to_bucket_task >> update_last_payments_update_task >> save_payments_to_db_task >> create_payments_index_task    
+verify_bucket_task >> verify_companies_exist_task >> get_last_payments_update_task >> save_payments_to_bucket_task >> update_last_payments_update_task >> save_payments_to_db_task >> create_payments_index_task >> validate_payments_index_task   

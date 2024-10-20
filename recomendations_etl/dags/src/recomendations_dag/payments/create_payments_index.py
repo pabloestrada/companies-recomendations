@@ -10,7 +10,7 @@ from helpers.bucket.index import put_file_s3  # Asegúrate de que la ruta sea co
 from helpers.api_call.api_call import api_call_training  # Asegúrate de que la ruta sea correcta
 from helpers.database.payments import get_payments_for_recomendations  # Asegúrate de que la ruta sea correcta
 
-def create_payments_index(payments_from, bucket_name):
+def create_payments_index(payments_from, bucket_name, payment_index_location):
     data = get_payments_for_recomendations(payments_from)
     print("Datos crudos:", data)
     # Crear un DataFrame a partir de los datos
@@ -78,8 +78,6 @@ def create_payments_index(payments_from, bucket_name):
 
     # Convertir el objeto a JSON
     json_data = json.dumps(data_to_store)
-
-    payment_index_location = 'index/payment_index.json'
     put_file_s3(bucket_name, payment_index_location, json_data)
     
     params = {
