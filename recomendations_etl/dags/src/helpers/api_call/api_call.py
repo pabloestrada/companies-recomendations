@@ -8,12 +8,13 @@ load_dotenv()
 def api_call(path, params):
     url = os.getenv("API_URL")  # URL base
     endpoint = f"/{path}"  # Usar el path proporcionado
-    response = requests.get(url + endpoint, params=params)  # Pasar los parámetros de búsqueda
-    if response.status_code == 200:
+    try:
+        response = requests.get(url + endpoint, params=params)  # Pasar los parámetros de búsqueda
+        response.raise_for_status()  # Raise an error for bad status codes (4xx/5xx)
         return response.json()  # Retornar los datos en formato JSON
-    else:
-        print(f"Error al consultar la API: {response.status_code}")  # Imprimir el error
-        raise  # Retornar None en caso de error
+    except requests.exceptions.RequestException as e:
+        print(f"Error al consultar la API: {response.status_code}, {e}")  # Imprimir el error
+        raise e  # Raise the caught exception # Retornar None en caso de error
     
     
 def api_call_training(params):

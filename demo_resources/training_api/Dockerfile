@@ -1,8 +1,8 @@
 # Usa una imagen base de Python 3.12
 FROM python:3.12-slim
 
-# Instala g++ y otras herramientas necesarias para compilar paquetes
-RUN apt-get update && apt-get install -y build-essential g++ && rm -rf /var/lib/apt/lists/*
+# Instala g++, PostgreSQL dev libraries y otras herramientas necesarias para compilar paquetes
+RUN apt-get update && apt-get install -y build-essential g++ libpq-dev && rm -rf /var/lib/apt/lists/*
 
 # Establece el directorio de trabajo
 WORKDIR /usr/src/app
