@@ -11,9 +11,9 @@ from helpers.database.data_updates import get_last_update  # Asegúrate de que l
 def get_last_payments_update():
     # Calcular la fecha actual y la fecha 3 días atrás
     new_last_date_update = datetime.now()  # Mantener como datetime para incluir la hora actual
-    updated_date_to_find = (datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d')  # Buscar por actualizaciones desde hace 3 días
+    updated_date_to_find = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')  # Buscar por actualizaciones desde hace 3 días
 
-    result = get_last_update()  # Suponemos que get_last_update() devuelve un resultado con 'last_date_update'
+    result = get_last_update('payments')  # Suponemos que get_last_update() devuelve un resultado con 'last_date_update'
     print(f"resultado del update {result}")
 
     # Verificar si el resultado es un array vacío
