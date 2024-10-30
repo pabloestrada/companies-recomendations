@@ -1,9 +1,9 @@
 from psycopg2.extras import execute_values
 import pandas as pd
-from .connect_db import connect_db
+from .redshift_connect_db import redshift_connect_db
 
 def insert_payments(consolidated_df):
-    conn = connect_db()  # Conectar a la base de datos
+    conn = redshift_connect_db()  # Conectar a la base de datos
     cursor = conn.cursor()
 
     # Preparar los datos para el bulk insert
@@ -19,7 +19,7 @@ def insert_payments(consolidated_df):
 
     update_query = """
         UPDATE payments_l0
-        SET end_date = NOW(), is_current = FALSE
+        SET end_date = SYSDATE, is_current = FALSE
         WHERE payment_id = %s
         AND company_code = %s
         AND is_current = TRUE;
@@ -100,7 +100,7 @@ def insert_payments(consolidated_df):
 
 
 def get_payments_for_recomendations(payments_from, limit=None):
-    conn = connect_db()  # Conectar a la base de datos
+    conn = redshift_connect_db()  # Conectar a la base de datos
     
     # Base de la query
     query = """

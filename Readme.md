@@ -20,16 +20,18 @@ Combina las métricas calculadas y las co-ocurrencias en un vector de caracterí
 
 2. Navega al directorio del proyecto
 
-3. Inicializar el entorno:
+3. Crear el archivo .env en la carpeta: recomendations_etl
+
+4. Inicializar el entorno:
    ```bash
     make init
    ```
-4. Acceder a la interfaz web:
+5. Acceder a la interfaz web:
 Una vez que Airflow esté en funcionamiento, puedes acceder a la interfaz web en http://localhost:8080 utilizando las credenciales predeterminadas (usuario: airflow, contraseña: airflow).
 
-5. Ejecutar el DAG Companies
+6. Ejecutar el DAG Companies
 
-6. Ejecutar el DAG Recomendations.  
+7. Ejecutar el DAG Recomendations.  
 
 
 ## Detalle del DAG Recomendations

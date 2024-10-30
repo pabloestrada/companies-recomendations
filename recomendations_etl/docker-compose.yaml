@@ -77,6 +77,12 @@ x-airflow-common:
     API_URL_TEST_TRAINING: http://training_api:5001/recommend_companies
     REGION: us-east-1
     AWS_ENDPOINT_URL: http://localstack:4566
+    REDSHIFT_PASSWORD: ${REDSHIFT_PASSWORD}
+    REDSHIFT_USER: ${REDSHIFT_USER}
+    REDSHIFT_DB: ${REDSHIFT_DB}
+    REDSHIFT_HOST: ${REDSHIFT_HOST}
+    REDSHIFT_SCHEMA: ${REDSHIFT_SCHEMA}
+    REDSHIFT_PORT: ${REDSHIFT_PORT}
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
@@ -111,6 +117,13 @@ services:
     depends_on:
       - postgres  
   training_api:  # Servicio para tu API
+    environment:
+      REDSHIFT_PASSWORD: ${REDSHIFT_PASSWORD}
+      REDSHIFT_USER: ${REDSHIFT_USER}
+      REDSHIFT_DB: ${REDSHIFT_DB}
+      REDSHIFT_HOST: ${REDSHIFT_HOST}
+      REDSHIFT_SCHEMA: ${REDSHIFT_SCHEMA}
+      REDSHIFT_PORT: ${REDSHIFT_PORT}
     build: ../demo_resources/training_api  # Construye la imagen usando el Dockerfile en el directorio actual
     ports:
       - "5001:5001"

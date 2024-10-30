@@ -22,7 +22,8 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
     'payments_from': datetime.now() - timedelta(days=30),  # Calcula la fecha de hace 30 días
     'bucket_name': 'payments',
-    'payment_index_location': 'index/payment_index.json'
+    'payment_index_location': 'index/payment_index.json',
+    'execution_timeout': timedelta(hours=1)
 }
 
 
