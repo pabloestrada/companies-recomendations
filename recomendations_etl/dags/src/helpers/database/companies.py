@@ -1,14 +1,14 @@
-from .connect_db import connect_db
+from .redshift_connect_db import redshift_connect_db
 from psycopg2.extras import execute_values
 
 def insert_companies(companies):
-    conn = connect_db()  # Conectar a la base de datos
+    conn = redshift_connect_db()  # Conectar a la base de datos
     try:
         # Iniciar una transacción
         cursor = conn.cursor()
 
         # Paso 1: Truncar la tabla
-        cursor.execute("TRUNCATE TABLE companies_l0 RESTART IDENTITY")
+        cursor.execute("TRUNCATE TABLE companies_l0")
 
         # Paso 2: Crear una lista de tuplas con los valores a insertar
         data = [

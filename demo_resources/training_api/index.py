@@ -6,12 +6,8 @@ import psycopg2
 import pandas as pd
 import json
 import annoy
-import io
 import tempfile
 import numpy as np
-
-# Cargar las variables de entorno
-load_dotenv()
 
 # Obtener las variables de entorno o usar valores predeterminados
 endpoint_url = os.getenv("AWS_ENDPOINT_URL", "http://localstack:4566")
@@ -20,12 +16,13 @@ aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY", "test")  # Credencial
 aws_region = os.getenv("AWS_REGION", "us-east-1")  # Región predeterminada
 
 # Obtener las variables de entorno o asignar valores predeterminados
-db_name = os.getenv("DB_NAME", "recomendations_db")
-db_user = os.getenv("DB_USER", "airflow")
-db_password = os.getenv("DB_PASSWORD", "airflow")
-db_host = os.getenv("DB_HOST", "postgres")
-db_port = os.getenv("DB_PORT", "5432")
-
+db_name = os.getenv("REDSHIFT_DB")
+db_user = os.getenv("REDSHIFT_USER")
+db_password = os.getenv("REDSHIFT_PASSWORD")
+db_host = os.getenv("REDSHIFT_HOST")
+db_port = os.getenv("REDSHIFT_PORT", "5439")
+schema_name = os.getenv("REDSHIFT_SCHEMA")
+    
 # Crear el cliente S3 con las credenciales obtenidas desde variables de entorno
 s3 = boto3.client(
     's3',
@@ -82,20 +79,37 @@ def load_json_data_from_s3(bucket_name, object_key):
 
 # Función para conectarse a la base de datos
 def connect_db():
-    # Conectar a la base de datos usando las variables almacenadas
-    conn = psycopg2.connect(
-        dbname=db_name,
-        user=db_user,
-        password=db_password,
-        host=db_host,
-        port=db_port
-    )
     
-    return conn
+    # Registro con print para verificar valores de configuración
+    print("Intentando conectar a Redshift con los siguientes parámetros:")
+
+
+    try:
+        conn = psycopg2.connect(
+            dbname=db_name,
+            user=db_user,
+            password=db_password,
+            host=db_host,
+            port=db_port
+        )
+        
+        # Establecer el esquema por defecto
+        with conn.cursor() as cursor:
+            cursor.execute(f'SET search_path TO "{schema_name}"')
+        
+        print("Conexión establecida y esquema configurado correctamente.")
+        return conn
+
+    except psycopg2.OperationalError as e:
+        print("Error al intentar conectar a la base de datos:", e)
+        return None
     
 # Función para cargar los datos desde la tabla payments_l0
 def load_data_from_db(external_client_id):
+        
     conn = connect_db()  # Conectar a la base de datos
+    if conn is None:
+        raise ConnectionError("No se pudo establecer la conexión con la base de datos.")
     query = """
         SELECT t.payment_at, t.amount, t.external_client_id, c.company_id, c.category_id, c.is_top_biller
         FROM payments_l0 t
@@ -151,17 +165,27 @@ def recomendar_empresas_para_cliente(client_id, num_recommendations=5, df_combin
 
 # Función para buscar el company_name y company_code de las empresas recomendadas
 def get_company_details(company_ids):
+    # Verificar si la lista de IDs está vacía
+    if not company_ids:
+        print("No hay company_ids para consultar.")
+        return []
+
     conn = connect_db()
     cursor = conn.cursor()
+
     # Print the company_ids for debugging
     print(f"Company IDs to query: {company_ids}")
-    # Convertir la lista de company_ids a una tupla para usar en la consulta
-    query = """
+
+    # Construye placeholders y crea una consulta dinámica
+    placeholders = ', '.join(['%s'] * len(company_ids))
+    query = f"""
         SELECT company_id, company_name, company_code
         FROM companies_l0
-        WHERE company_id = ANY(ARRAY[%s]::VARCHAR[]);
+        WHERE company_id IN ({placeholders});
     """
-    cursor.execute(query, (company_ids,))
+    
+    # Pasa company_ids directamente como lista de parámetros
+    cursor.execute(query, company_ids)
     result = cursor.fetchall()
 
     # Cerrar la conexión

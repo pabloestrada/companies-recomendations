@@ -1,10 +1,14 @@
 # Comando para levantar los servicios
 init:
 	cd recomendations_etl && \
-	echo "AIRFLOW_UID=$$(id -u)" > .env && \
+	if grep -q "^AIRFLOW_UID=" .env; then \
+	  sed -i '' "s/^AIRFLOW_UID=.*/AIRFLOW_UID=$$(id -u)/" .env; \
+	else \
+	  (echo ""; echo "AIRFLOW_UID=$$(id -u)"; cat .env) > .env.tmp && mv .env.tmp .env; \
+	fi && \
 	docker network create --driver bridge local || true && \
 	docker-compose up -d && \
-    cd ../demo_resources/api && \
+	cd ../demo_resources/api && \
 	npm run migrate:up && npm run seeds
 # Comando para levantar los servicios
 migrations:
