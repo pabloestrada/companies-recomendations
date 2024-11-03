@@ -107,15 +107,7 @@ services:
       - SERVICES=s3
       - DEBUG=1
     ports:
-      - '4566:4566'
-  api:  # Servicio para tu API
-    build: ../demo_resources/api  # Construye la imagen usando el Dockerfile en el directorio actual
-    ports:
-      - "3000:3000"  # Mapea el puerto 3000 del contenedor al puerto 3000 del host
-    networks:
-      - local
-    depends_on:
-      - postgres  
+      - '4566:4566'  
   training_api:  # Servicio para tu API
     environment:
       REDSHIFT_PASSWORD: ${REDSHIFT_PASSWORD}
@@ -147,7 +139,14 @@ services:
     restart: always
     ports:
       - "5432:5432"
-
+  api:  # Servicio para tu API
+    build: ../demo_resources/api  # Construye la imagen usando el Dockerfile en el directorio actual
+    ports:
+      - "3000:3000"  # Mapea el puerto 3000 del contenedor al puerto 3000 del host
+    networks:
+      - local
+    depends_on:
+      - postgres
   redis:
     # Redis is limited to 7.2-bookworm due to licencing change
     # https://redis.io/blog/redis-adopts-dual-source-available-licensing/

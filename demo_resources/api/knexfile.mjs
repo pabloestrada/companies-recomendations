@@ -18,7 +18,7 @@ export default {
   migrations: {
     client: "pg",
     connection: {
-      host: process.env.DB_HOST || "localhost",
+      host: process.env.DB_HOST || "postgres",
       user: process.env.DB_USER || "api",
       password: process.env.DB_PASSWORD || "test",
       database: process.env.DB_NAME || "test_api_db",

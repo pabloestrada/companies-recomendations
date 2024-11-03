@@ -22,5 +22,6 @@ EXPOSE 3000
 # Establece la variable de entorno NODE_ENV
 ENV NODE_ENV=development
 
-# Comando para ejecutar la aplicación
-CMD ["node", "index.mjs"]
+
+# Comando para ejecutar la migración y las semillas antes de iniciar la aplicación
+CMD ["sh", "-c", "until nc -z postgres 5432; do echo 'Esperando a que la base de datos esté disponible...'; sleep 5; done && npm run migrate:up && npm run seeds && node index.mjs"]

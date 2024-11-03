@@ -7,12 +7,7 @@ init:
 	  (echo ""; echo "AIRFLOW_UID=$$(id -u)"; cat .env) > .env.tmp && mv .env.tmp .env; \
 	fi && \
 	docker network create --driver bridge local || true && \
-	docker-compose up -d && \
-	cd ../demo_resources/api && \
-	npm run migrate:up && npm run seeds
-# Comando para levantar los servicios
-migrations:
-	cd ../demo_resources/api && npm run migrate:up && npm run seeds
+	docker-compose up -d
 
 test:
 	pytest ./recomendations_etl/dags/src/
