@@ -72,7 +72,7 @@ x-airflow-common:
     # The following line can be used to set a custom config file, stored in the local config folder
     # If you want to use it, outcomment it and replace airflow.cfg with the name of your config file
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
-    API_URL: http://api:3000
+    API_URL: https://unh3dm916a.execute-api.us-east-2.amazonaws.com/test
     API_URL_TRAINING: http://training_api:5001/create_index
     API_URL_TEST_TRAINING: http://training_api:5001/recommend_companies
     REGION: us-east-1
@@ -139,14 +139,6 @@ services:
     restart: always
     ports:
       - "5432:5432"
-  api:  # Servicio para tu API
-    build: ../demo_resources/api  # Construye la imagen usando el Dockerfile en el directorio actual
-    ports:
-      - "3000:3000"  # Mapea el puerto 3000 del contenedor al puerto 3000 del host
-    networks:
-      - local
-    depends_on:
-      - postgres
   redis:
     # Redis is limited to 7.2-bookworm due to licencing change
     # https://redis.io/blog/redis-adopts-dual-source-available-licensing/
